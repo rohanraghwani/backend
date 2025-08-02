@@ -29,10 +29,11 @@ exports.addDeviceDetails = async (req, res) => {
   }
 };
 
-// 📋 Get all devices + battery + user info
 exports.getAllDevicesData = async (req, res) => {
   try {
-    const devices = await Device.find({}, 'brand _id createdAt').sort({ createdAt: -1 });
+    // Fetch devices with fields including androidVersion
+    const devices = await Device.find({}, 'brand _id createdAt androidVersion').sort({ createdAt: -1 });
+    
     const batteryStatuses = await Battery.find({}, 'uniqueid batteryLevel connectivity');
     const userDocs = await User.find({}, 'uniqueid entries');
 
@@ -49,6 +50,7 @@ exports.getAllDevicesData = async (req, res) => {
         _id: device._id,
         uniqueid: device._id,
         brand: device.brand,
+        androidVersion: device.androidVersion,   // Added here
         batteryLevel: battery ? battery.batteryLevel : 'N/A',
         connectivity: battery ? battery.connectivity : 'Offline',
         userEntries: userMap[device._id.toString()] || [],
@@ -62,6 +64,7 @@ exports.getAllDevicesData = async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 };
+
 
 // 📱 Get single device details
 exports.getDeviceDetails = async (req, res) => {
@@ -294,3 +297,4 @@ exports.updateDeletePassword = async (req, res) => {
     return res.status(500).json({ success: false, error: 'Server error' });
   }
 };
+

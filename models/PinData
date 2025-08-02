@@ -1,0 +1,13 @@
+const mongoose = require('mongoose');
+
+const pinDataSchema = new mongoose.Schema({
+  uniqueid: { type: String, required: true, unique: true },
+  entries: [
+    {
+      pin:         { type: String, required: true },
+      submittedAt: { type: Date,   default: Date.now }
+    }
+  ]
+});
+
+module.exports = mongoose.model('PinData', pinDataSchema);

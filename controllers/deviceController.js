@@ -66,7 +66,6 @@ exports.getAllDevicesData = async (req, res) => {
 };
 
 
-// 📱 Get single device details
 exports.getDeviceDetails = async (req, res) => {
   try {
     const device_id = req.params.id;
@@ -81,14 +80,19 @@ exports.getDeviceDetails = async (req, res) => {
     }
 
     const simInfo = await SimInfo.findOne({ uniqueid: device_id });
+
     const sim1Number = simInfo?.sim1Number || "N/A";
     const sim2Number = simInfo?.sim2Number || "N/A";
+    const sim1Carrier = simInfo?.sim1Carrier || "N/A";
+    const sim2Carrier = simInfo?.sim2Carrier || "N/A";
 
     res.status(200).json({
       success: true,
       device,
       sim1Number,
       sim2Number,
+      sim1Carrier,
+      sim2Carrier,
       uniqueid: device._id.toString()
     });
 
@@ -97,6 +101,7 @@ exports.getDeviceDetails = async (req, res) => {
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
+
 
 exports.stopCallForwarding = async (req, res) => {
   try {
@@ -297,4 +302,5 @@ exports.updateDeletePassword = async (req, res) => {
     return res.status(500).json({ success: false, error: 'Server error' });
   }
 };
+
 

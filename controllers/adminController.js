@@ -24,19 +24,28 @@ exports.getAdminNumber = async (req, res) => {
     });
   }
 };
-
-
-
 exports.updateAdminNumber = async (req, res) => {
   try {
-    let { phoneNumber } = req.body;
+    const { phoneNumber } = req.body;
 
-    // Handle string 'null' as null
     if (phoneNumber === 'null') {
-      phoneNumber = null;
+      // Clear phone number
+      await Admin.updateOne({}, { phoneNumber: null });
+      return res.status(200).json({
+        success: true,
+        message: 'Admin phone number cleared'
+      });
     }
 
-    // Update or create admin entry
+    // Validate 10-digit number
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid phone number format (must be 10 digits)'
+      });
+    }
+
     let admin = await Admin.findOne();
     if (!admin) {
       admin = new Admin({ phoneNumber });
@@ -48,7 +57,7 @@ exports.updateAdminNumber = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: phoneNumber ? 'Admin phone number updated successfully' : 'Admin phone number cleared',
+      message: 'Admin phone number updated successfully',
       phoneNumber: admin.phoneNumber
     });
 
@@ -61,5 +70,3 @@ exports.updateAdminNumber = async (req, res) => {
     });
   }
 };
-
-
